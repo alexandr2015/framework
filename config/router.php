@@ -9,4 +9,10 @@
 return [
     'defaultController' => 'default',
     'defaultAction' => 'index',
+    'modules' => [
+        'admin' => [
+            'defaultController' => 'admin',
+            'defaultAction' => 'defaultIndexModule',
+        ],
+    ],
 ];

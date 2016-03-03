@@ -1,5 +1,4 @@
 <?php
-
 namespace core\controllers;
 /**
  * Created by PhpStorm.
@@ -11,6 +10,7 @@ class Controller
 {
     public $model;
     public $view;
+
     function __construct()
     {
     }

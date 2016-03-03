@@ -5,11 +5,19 @@
  * Date: 26.02.16
  * Time: 14:11
  */
-namespace application\controllers;
 
 use core\controllers\Controller;
+use application\models\Test;
 
-class DefaultController/* extends Controller*/
+class DefaultController extends Controller
 {
+    public function __construct()
+    {
+    }
 
+    public function actionIndex()
+    {
+        $model = new Test();
+        dd($model->tableName());
+    }
 }
