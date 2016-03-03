@@ -11,5 +11,8 @@ use core\models\DatabaseModel;
 
 class Test extends DatabaseModel
 {
-
+    public function __construct()
+    {
+        parent::__construct();
+    }
 }

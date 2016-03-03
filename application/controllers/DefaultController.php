@@ -9,7 +9,7 @@
 use core\controllers\Controller;
 use application\models\Test;
 
-class DefaultController extends Controller
+class DefaultController extends Controllers
 {
     public function __construct()
     {
@@ -18,6 +18,6 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $model = new Test();
-        dd($model->tableName());
+
     }
 }
