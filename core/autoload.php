@@ -7,11 +7,9 @@
  */
 
 spl_autoload_register(function($class) {
-    $parsePath = explode('\\', $class);
+    $class = str_replace('_', '-', $class);
     $path = Config::get('root');
-    foreach ($parsePath as $item) {
-        $path .=  '/' . $item;
-    }
+    $path .= '/'.str_replace('\\', '/', $class);
     $path .= '.php';
     if (file_exists($path)) {
         require_once $path;

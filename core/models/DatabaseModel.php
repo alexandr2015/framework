@@ -7,13 +7,12 @@
  */
 namespace core\models;
 use core\Connection;
+use core\models\model_traits\QueryBuilder;
 
 class DatabaseModel extends BaseModel
 {
+    use QueryBuilder;
     private $_connection;
-
-    private $_select;
-    private $_where;
 
     protected $visible = [];
 
@@ -35,17 +34,5 @@ class DatabaseModel extends BaseModel
     protected function setConnection()
     {
         $this->_connection = Connection::getConnection();
-    }
-
-    public function select(array $select)
-    {
-        $this->_select = $select;
-        return $this;
-    }
-
-    public function where(array $where)
-    {
-        $this->_where = $where;
-        return $this;
     }
 }
