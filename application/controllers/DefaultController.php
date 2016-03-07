@@ -24,7 +24,8 @@ class DefaultController extends Controller
             'sasha2',
         ];
         $res = $model->select(['name', 'smth'])
-            ->where(['name' => $ids]);
+            ->where(['id' => 1])
+            ->orWhereIn('name', $ids);
         var_dump($res); die;
     }
 }

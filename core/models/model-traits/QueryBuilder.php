@@ -24,6 +24,8 @@ trait QueryBuilder
 
     private $_having;
 
+    private $_join;
+
     private $_params = [];
 
     public function select()
@@ -94,20 +96,28 @@ trait QueryBuilder
 
     public function whereIn($field, $values)
     {
-        if (is_array($values)) {
-//            dd(implode())
-        } elseif(is_string($values)) {
-            $where = $field . '(' . $values . ')';
-        } else {
-            dd('where in error', $this);
-        }
-        $this->setWhere($where);
+        $array[$field] = $values;
+        $this->parseWhere($array, 'and');
+
+        return $this;
+    }
+
+    public function orWhereIn($field, $values)
+    {
+        $array[$field] = $values;
+        $this->parseWhere($array, 'or');
+
         return $this;
     }
 
     public function distinct()
     {
         $this->setDistinct(true);
+    }
+
+    public function setJoin($join)
+    {
+        $this->_join = $join;
     }
 
     public function setDistinct($distinct)
@@ -136,6 +146,11 @@ trait QueryBuilder
         $this->_orderBy = $orderBy;
     }
 
+    public function join($join, $table, $on)
+    {
+
+    }
+
     public function parseWhere()
     {
         $count = func_num_args();
@@ -148,8 +163,8 @@ trait QueryBuilder
                     $field = key($condition);
                     $value = $condition[$field];
                     if (is_array($value)) {
-                        $in = implode(',', array_map(function($item) {
-                            return '\'' . $item . '\'';
+                        $in = implode(',', array_map(function($item) use ($field) {
+                            return '\'' . $this->setParams($field, $item) . '\'';
                         }, $value));
                         $where = $field . ' in (' . $in . ')';
                     } else {
