@@ -150,6 +150,7 @@ trait QueryBuilder
     {
         $sql = 'SELECT ' . $this->_select . ' FROM ' . $this->tableName();
         if ($this->_where) {
+            $sql .= ' WHERE';
             foreach($this->_where as $where) {
                 $sql .= ' ' . $where;
             }
@@ -194,8 +195,8 @@ trait QueryBuilder
                     $value = $condition[$field];
                     if (is_array($value)) {
                         $in = implode(',', array_map(function($item) use ($field) {
-//                            return '\'' . $this->setParams($field, $item) . '\'';
-                            return $this->setParams($field, $item);
+                            return '\'' . $this->setParams($field, $item) . '\'';
+//                            return $this->setParams($field, $item);
                         }, $value));
                         $where = $field . ' in (' . $in . ')';
                     } else {

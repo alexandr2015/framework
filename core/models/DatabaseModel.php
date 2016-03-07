@@ -35,10 +35,13 @@ class DatabaseModel extends BaseModel
 
     public function all()
     {
+        if (!$this->_connection) {
+            $this->setConnection();
+        }
         $this->buildSql();
         $this->setRawSql();
-        $result = $this->_connection->prepare($this->sql)->execute($this->_params);
-        dd($result, $this);
-        return 1;
+        $result = $this->_connection->prepare($this->rawSql);
+        $result->execute();
+        return $result->fetch(\PDO::FETCH_ASSOC);
     }
 }
