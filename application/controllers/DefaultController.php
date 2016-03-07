@@ -25,7 +25,7 @@ class DefaultController extends Controller
         ];
         $res = $model->select(['name', 'smth'])
             ->where(['id' => 1])
-            ->orWhereIn('name', $ids);
+            ->orWhereIn('name', $ids)->all();
         var_dump($res); die;
     }
 }

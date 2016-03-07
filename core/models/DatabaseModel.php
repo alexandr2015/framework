@@ -12,6 +12,9 @@ use core\models\model_traits\QueryBuilder;
 class DatabaseModel extends BaseModel
 {
     use QueryBuilder;
+    /**
+     * @var $_connection \PDO object
+     */
     private $_connection;
 
     protected $visible = [];
@@ -25,14 +28,17 @@ class DatabaseModel extends BaseModel
         $this->setConnection();
     }
 
-    public function tableName()
-    {
-        $class = get_called_class();
-        return strtolower(substr($class, strrpos($class, '\\') + 1, strlen($class)));
-    }
-
     protected function setConnection()
     {
         $this->_connection = Connection::getConnection();
+    }
+
+    public function all()
+    {
+        $this->buildSql();
+        $this->setRawSql();
+        $result = $this->_connection->prepare($this->sql)->execute($this->_params);
+        dd($result, $this);
+        return 1;
     }
 }

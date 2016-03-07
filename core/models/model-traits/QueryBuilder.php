@@ -12,7 +12,7 @@ trait QueryBuilder
 
     private $_distinct = false;
 
-    private $_select;
+    private $_select = '*';
 
     private $_where;
 
@@ -26,7 +26,17 @@ trait QueryBuilder
 
     private $_join;
 
+    public $sql;
+
+    public $rawSql;
+
     private $_params = [];
+
+    public function tableName()
+    {
+        $class = get_called_class();
+        return strtolower(substr($class, strrpos($class, '\\') + 1, strlen($class)));
+    }
 
     public function select()
     {
@@ -136,6 +146,26 @@ trait QueryBuilder
         $this->setLimit(1);
     }
 
+    public function buildSql()
+    {
+        $sql = 'SELECT ' . $this->_select . ' FROM ' . $this->tableName();
+        if ($this->_where) {
+            foreach($this->_where as $where) {
+                $sql .= ' ' . $where;
+            }
+        }
+
+        if ($this->_limit) {
+            $sql .= ' LIMIT ' . $this->_limit;
+        }
+
+        if ($this->_orderBy) {
+            $sql .= ' ORDER BY ' . $this->_orderBy;
+        }
+
+        $this->sql = $sql;
+    }
+
     public function setLimit($limit)
     {
         $this->_limit = 'limit' . $limit;
@@ -146,9 +176,9 @@ trait QueryBuilder
         $this->_orderBy = $orderBy;
     }
 
-    public function join($join, $table, $on)
+    public function setRawSql()
     {
-
+        $this->rawSql = str_replace(array_keys($this->_params), array_values($this->_params), $this->sql);
     }
 
     public function parseWhere()
@@ -164,7 +194,8 @@ trait QueryBuilder
                     $value = $condition[$field];
                     if (is_array($value)) {
                         $in = implode(',', array_map(function($item) use ($field) {
-                            return '\'' . $this->setParams($field, $item) . '\'';
+//                            return '\'' . $this->setParams($field, $item) . '\'';
+                            return $this->setParams($field, $item);
                         }, $value));
                         $where = $field . ' in (' . $in . ')';
                     } else {
