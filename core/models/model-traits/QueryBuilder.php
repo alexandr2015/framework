@@ -9,6 +9,9 @@ namespace core\models\model_traits;
 
 trait QueryBuilder
 {
+
+    private $_distinct = false;
+
     private $_select;
 
     private $_where;
@@ -67,34 +70,132 @@ trait QueryBuilder
         return $this;
     }
 
+    public function whereBetween($field, $from, $to)
+    {
+        $parameters = ['between', $field, $from, $to, 'and'];
+        call_user_func_array(
+            [$this, 'parseWhere'],
+            $parameters
+        );
+
+        return $this;
+    }
+
+    public function orWhereBetween($field, $from, $to)
+    {
+        $parameters = ['between', $field, $from, $to, 'or'];
+        call_user_func_array(
+            [$this, 'parseWhere'],
+            $parameters
+        );
+
+        return $this;
+    }
+
+    public function whereIn($field, $values)
+    {
+        if (is_array($values)) {
+//            dd(implode())
+        } elseif(is_string($values)) {
+            $where = $field . '(' . $values . ')';
+        } else {
+            dd('where in error', $this);
+        }
+        $this->setWhere($where);
+        return $this;
+    }
+
+    public function distinct()
+    {
+        $this->setDistinct(true);
+    }
+
+    public function setDistinct($distinct)
+    {
+        $this->_distinct = $distinct;
+    }
+
+    public function orderBy($orberBy)
+    {
+        $this->setOrderBy($orberBy);
+        return $this;
+    }
+
+    public function one()
+    {
+        $this->setLimit(1);
+    }
+
+    public function setLimit($limit)
+    {
+        $this->_limit = 'limit' . $limit;
+    }
+
+    public function setOrderBy($orderBy)
+    {
+        $this->_orderBy = $orderBy;
+    }
+
     public function parseWhere()
     {
         $count = func_num_args();
         $where = null;
-        $operator = 'and';
+        $loginOperator = null;
         switch ($count) {
+            case 2: {
+                $condition = func_get_arg(0);
+                if (is_array($condition)) {
+                    $field = key($condition);
+                    $value = $condition[$field];
+                    if (is_array($value)) {
+                        $in = implode(',', array_map(function($item) {
+                            return '\'' . $item . '\'';
+                        }, $value));
+                        $where = $field . ' in (' . $in . ')';
+                    } else {
+                        $where = $field . ' = ' . $this->setParams($field, $value);
+                    }
+                } else {
+                    $where = $condition;
+                }
+                $loginOperator = func_get_arg(1);
+                break;
+            }
             case 3: {
                 $field = func_get_arg(0);
                 $value = func_get_arg(1);
-                $operator = func_get_arg(2);
-                $alias = $this->setParams(':'.$field, $value);
+                $loginOperator = func_get_arg(2);
+                $alias = $this->setParams($field, $value);
                 $where = $field . ' = ' . $alias;
                 break;
             }
             case 4: {
                 $field = func_get_arg(0);
-                $op = func_get_arg(1);
+                $operator = func_get_arg(1);
                 $value = func_get_arg(2);
-                $operator = func_get_arg(3);
-                $alias = $this->setParams(':'.$field, $value);
-                $where = $field . ' ' . $op . ' ' . $alias;
+                $loginOperator = func_get_arg(3);
+                $alias = $this->setParams($field, $value);
+                $where = $field . ' ' . $operator . ' ' . $alias;
+                break;
+            }
+            case 5: {
+                $operator = func_get_arg(0);
+                if (strtolower($operator) == 'between') {
+                    $field = func_get_arg(1);
+                    $fromValue = func_get_arg(2);
+                    $toValue = func_get_arg(3);
+                    $loginOperator = func_get_arg(4);
+                    $aliasFrom = $this->setParams($field, $fromValue);
+                    $aliasTo = $this->setParams($field, $toValue);
+                    $where = $field . ' BETWEEN ' .$aliasFrom . ' AND ' . $aliasTo;
+                }
                 break;
             }
             default : {
                 dd('error where count', $this);
             }
         }
-        $this->setWhere($where, $operator);
+        $this->setWhere($where, $loginOperator);
 
         return $this;
     }
@@ -115,6 +216,9 @@ trait QueryBuilder
 
     protected function setParams($alias, $value, $num = null)
     {
+        if (is_null($num)) {
+            $alias = ':'.$alias;
+        }
         if (array_key_exists($alias.$num, $this->_params)) {
             $num = (is_null($num)) ? 1 : $num + 1;
 
@@ -122,7 +226,6 @@ trait QueryBuilder
         } else {
             $alias .= $num;
             $this->_params[$alias] = $value;
-
 
             return $alias;
         }
