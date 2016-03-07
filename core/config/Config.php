@@ -6,7 +6,7 @@
  * Time: 14:23
  */
 
-class Config
+final class Config
 {
     private static $_config = [];
 
@@ -35,4 +35,8 @@ class Config
     }
 
     private function __clone() {}
+
+    private function __sleep() {}
+
+    private function __wakeup() {}
 }

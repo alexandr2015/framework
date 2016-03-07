@@ -26,6 +26,8 @@ trait QueryBuilder
 
     private $_join;
 
+    private $_asArray;
+
     public $sql;
 
     public $rawSql;
@@ -139,6 +141,17 @@ trait QueryBuilder
     {
         $this->setOrderBy($orberBy);
         return $this;
+    }
+
+    public function asArray()
+    {
+        $this->setAsArray();
+        return $this;
+    }
+
+    public function setAsArray($asArray = true)
+    {
+        $this->_asArray = $asArray;
     }
 
     public function one()

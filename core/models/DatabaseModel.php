@@ -25,7 +25,7 @@ class DatabaseModel extends BaseModel
 
     public function __construct()
     {
-        $this->setConnection();
+
     }
 
     protected function setConnection()
@@ -42,6 +42,12 @@ class DatabaseModel extends BaseModel
         $this->setRawSql();
         $result = $this->_connection->prepare($this->rawSql);
         $result->execute();
-        return $result->fetch(\PDO::FETCH_ASSOC);
+        $response = $result->fetch(\PDO::FETCH_ASSOC);
+        if ($this->_asArray) {
+            return $response;
+        } else {
+            $class = get_called_class();
+            return new $class($response);
+        }
     }
 }

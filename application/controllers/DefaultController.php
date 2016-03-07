@@ -18,13 +18,13 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $model = new Test();
-        $ids = [
-            'sasha',
-            'sasha1',
-            'sasha2',
-        ];
-        $res = $model->select(['name', 'smth'])
-            ->where(['id' => 1])->all();
-        var_dump($res); die;
+//        $ids = [
+//            'sasha',
+//            'sasha1',
+//            'sasha2',
+//        ];
+
+        //->all(); die;
+//        var_dump($res); die;
     }
 }
