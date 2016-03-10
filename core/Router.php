@@ -10,14 +10,28 @@ include 'config/Config.php';
 class Router
 {
     const DEFAULT_ACTION = 'index';
+
     private $_config = [];
+
     private $_module = false;
+
     private $_controller = null;
+
     private $_action = self::DEFAULT_ACTION;
+
     private $_params = [];
+
     private $_controllerPath = null;
 
-    // setters start
+    public function __construct()
+    {
+        $this->loadConfig();
+        $this->parseFullUrl();
+    }
+
+    /**
+     * setters
+     */
     protected function setModule($module, $withDefaultController = false)
     {
         $this->_module = $module;
@@ -65,13 +79,6 @@ class Router
     {
         $this->setController($controller);
         $this->setControllerPath($hasModule);
-    }
-    //setters end
-
-    public function __construct()
-    {
-        $this->loadConfig();
-        $this->parseFullUrl();
     }
 
     protected function loadConfig()
