@@ -7,7 +7,7 @@
  */
 namespace core;
 
-class Connection
+final class Connection
 {
     private static $_dns;
 
@@ -17,10 +17,7 @@ class Connection
 
     private static $_connection = false;
 
-    private function __construct() {
-    }
-
-    private function __clone() {}
+    private function __construct() {}
 
     public static function getConnection()
     {
@@ -38,4 +35,10 @@ class Connection
         self::$_password = $config['password'];
         self::$_connection = new \PDO(self::$_dns, self::$_user, self::$_password);
     }
+
+    private function __clone() {}
+
+    private function __sleep() {}
+
+    private function __wakeup() {}
 }
