@@ -18,13 +18,7 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $model = new Test();
-//        $ids = [
-//            'sasha',
-//            'sasha1',
-//            'sasha2',
-//        ];
-
-        //->all(); die;
-//        var_dump($res); die;
+        $res = $model->all();
+        dd($res);
     }
 }

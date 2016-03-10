@@ -14,10 +14,19 @@ class DatabaseModel extends BaseModel
 {
     use QueryBuilder;
 
+    public function __construct(array $data = [])
+    {
+        if (isset($data)) {
+            var_dump($data);
+        }
+    }
+
     /**
      * @var $_connection \PDO object
      */
     private $_connection;
+
+    private $_private;
 
     protected $visible = [];
 
@@ -30,6 +39,15 @@ class DatabaseModel extends BaseModel
         $this->_connection = Connection::getConnection();
     }
 
+    protected function addFields(array $data)
+    {
+        foreach ($data as $key => $value) {
+            $this->_private[$key] = $value;
+        }
+
+        return $this;
+    }
+
     public function all()
     {
         if (!$this->_connection) {
@@ -39,12 +57,16 @@ class DatabaseModel extends BaseModel
         $this->setRawSql();
         $result = $this->_connection->prepare($this->rawSql);
         $result->execute();
-        $response = $result->fetch(\PDO::FETCH_ASSOC);
+        $response = $result->fetchAll(\PDO::FETCH_ASSOC);
         if ($this->_asArray) {
             return $response;
         } else {
-            $class = get_called_class();
-            return new $class($response);
+            $objects = [];
+            foreach ($response as $obj) {
+                $objects[] =  $this->addFields($obj);
+            }
+
+            return $objects;
         }
     }
 }
