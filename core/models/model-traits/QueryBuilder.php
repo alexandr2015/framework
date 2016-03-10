@@ -1,15 +1,16 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: alex
  * Date: 04.03.16
  * Time: 10:46
  */
+
 namespace core\models\model_traits;
 
 trait QueryBuilder
 {
-
     private $_distinct = false;
 
     private $_select = '*';
@@ -40,6 +41,72 @@ trait QueryBuilder
         return strtolower(substr($class, strrpos($class, '\\') + 1, strlen($class)));
     }
 
+    /**
+     * setters
+     */
+    public function setJoin($join)
+    {
+        $this->_join = $join;
+    }
+
+    public function setDistinct($distinct)
+    {
+        $this->_distinct = $distinct;
+    }
+
+    public function setAsArray($asArray = true)
+    {
+        $this->_asArray = $asArray;
+    }
+
+    public function setLimit($limit)
+    {
+        $this->_limit = 'limit' . $limit;
+    }
+
+    public function setOrderBy($orderBy)
+    {
+        $this->_orderBy = $orderBy;
+    }
+
+    public function setRawSql()
+    {
+        $this->rawSql = str_replace(array_keys($this->_params), array_values($this->_params), $this->sql);
+    }
+
+    protected function setSelect($select)
+    {
+        $this->_select = $select;
+    }
+
+    protected function setWhere($where, $op = 'and')
+    {
+        if (empty($this->_where)) {
+            $this->_where[] = $where;
+        } else {
+            $this->_where[] = $op . ' ' . $where;
+        }
+    }
+
+    protected function setParams($alias, $value, $num = null)
+    {
+        if (is_null($num)) {
+            $alias = ':'.$alias;
+        }
+        if (array_key_exists($alias.$num, $this->_params)) {
+            $num = (is_null($num)) ? 1 : $num + 1;
+
+            return $this->setParams($alias, $value, $num);
+        } else {
+            $alias .= $num;
+            $this->_params[$alias] = $value;
+
+            return $alias;
+        }
+    }
+    /**
+     * build queries
+     */
     public function select()
     {
         $value = func_get_arg(0);
@@ -127,16 +194,6 @@ trait QueryBuilder
         $this->setDistinct(true);
     }
 
-    public function setJoin($join)
-    {
-        $this->_join = $join;
-    }
-
-    public function setDistinct($distinct)
-    {
-        $this->_distinct = $distinct;
-    }
-
     public function orderBy($orberBy)
     {
         $this->setOrderBy($orberBy);
@@ -147,11 +204,6 @@ trait QueryBuilder
     {
         $this->setAsArray();
         return $this;
-    }
-
-    public function setAsArray($asArray = true)
-    {
-        $this->_asArray = $asArray;
     }
 
     public function one()
@@ -180,21 +232,6 @@ trait QueryBuilder
         $this->sql = $sql;
     }
 
-    public function setLimit($limit)
-    {
-        $this->_limit = 'limit' . $limit;
-    }
-
-    public function setOrderBy($orderBy)
-    {
-        $this->_orderBy = $orderBy;
-    }
-
-    public function setRawSql()
-    {
-        $this->rawSql = str_replace(array_keys($this->_params), array_values($this->_params), $this->sql);
-    }
-
     public function parseWhere()
     {
         $count = func_num_args();
@@ -209,7 +246,6 @@ trait QueryBuilder
                     if (is_array($value)) {
                         $in = implode(',', array_map(function($item) use ($field) {
                             return '\'' . $this->setParams($field, $item) . '\'';
-//                            return $this->setParams($field, $item);
                         }, $value));
                         $where = $field . ' in (' . $in . ')';
                     } else {
@@ -258,36 +294,5 @@ trait QueryBuilder
         $this->setWhere($where, $loginOperator);
 
         return $this;
-    }
-
-    protected function setSelect($select)
-    {
-        $this->_select = $select;
-    }
-
-    protected function setWhere($where, $op = 'and')
-    {
-        if (empty($this->_where)) {
-            $this->_where[] = $where;
-        } else {
-            $this->_where[] = $op . ' ' . $where;
-        }
-    }
-
-    protected function setParams($alias, $value, $num = null)
-    {
-        if (is_null($num)) {
-            $alias = ':'.$alias;
-        }
-        if (array_key_exists($alias.$num, $this->_params)) {
-            $num = (is_null($num)) ? 1 : $num + 1;
-
-            return $this->setParams($alias, $value, $num);
-        } else {
-            $alias .= $num;
-            $this->_params[$alias] = $value;
-
-            return $alias;
-        }
     }
 }

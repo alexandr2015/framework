@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: alex
@@ -12,6 +13,7 @@ use core\models\model_traits\QueryBuilder;
 class DatabaseModel extends BaseModel
 {
     use QueryBuilder;
+
     /**
      * @var $_connection \PDO object
      */
@@ -22,11 +24,6 @@ class DatabaseModel extends BaseModel
     protected $hidden = [];
 
     protected $primaryKey = 'id';
-
-    public function __construct()
-    {
-
-    }
 
     protected function setConnection()
     {
