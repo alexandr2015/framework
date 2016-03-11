@@ -10,19 +10,38 @@ namespace core\database\migration;
 
 trait MigrationBuilder
 {
+    private $_queries = [];
+
     protected function createTable($tableName, $tableFields)
     {
-
+        $sql = 'create table ' . $tableName . '(';
+        foreach ($tableFields as $field => $fieldType) {
+            $sql .= '`' . $field . '` ' . $fieldType . ',';
+        }
+        $sql = rtrim($sql, ','); // delete last ,
+        $sql .= ')';
+        $this->addCurrentQueryToAll($sql);
     }
 
     protected function dropTable($tableName)
     {
-
+        $sql = 'DROP TABLE ' . $tableName;
+        $this->addCurrentQueryToAll($sql);
     }
 
+    public function getAllQueries()
+    {
+        return $this->_queries;
+    }
     /**
      * fields type
      */
+    protected function primaryKey()
+    {
+
+        return $this;
+    }
+
     protected function integer()
     {
         return $this;
@@ -33,7 +52,7 @@ trait MigrationBuilder
         return $this;
     }
 
-    protected function default()
+    protected function defaultValue()
     {
         return $this;
     }
@@ -51,5 +70,10 @@ trait MigrationBuilder
     protected function date()
     {
         return $this;
+    }
+
+    public function addCurrentQueryToAll($query)
+    {
+        $this->_queries[] = $query;
     }
 }

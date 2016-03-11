@@ -18,7 +18,7 @@ spl_autoload_register(function($class) {
 
 function parseNameSpace($class)
 {
-    $class = str_replace('_', '-', $class);
+    $class = str_replace('-', '_', $class);
     $path = Config::get('root');
     $path .= '/'.str_replace('\\', '/', $class);
     $path .= '.php';

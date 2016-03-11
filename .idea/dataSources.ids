@@ -8,24 +8,34 @@
     <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact"/>
     <database-model serializer="dbm" rdbms="MYSQL" format-version="2.4">
       <schema id="1" name="framework"/>
-      <table id="2" parent="1" name="test"/>
-      <column id="3" parent="2" name="id">
+      <table id="2" parent="1" name="migration"/>
+      <table id="3" parent="1" name="Test2"/>
+      <column id="4" parent="2" name="name">
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="5" parent="2" name="date">
+        <mandatory>1</mandatory>
+        <data-type>timestamp</data-type>
+        <default-expression>&apos;CURRENT_TIMESTAMP&apos;</default-expression>
+      </column>
+      <index id="6" parent="2" name="name">
+        <columns>name</columns>
+        <desc-columns></desc-columns>
+        <unique>1</unique>
+      </index>
+      <key id="7" parent="2" name="name">
+        <columns>name</columns>
+        <underlying-index>name</underlying-index>
+      </key>
+      <column id="8" parent="3" name="id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="4" parent="2" name="name">
+      <column id="9" parent="3" name="name">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="5" parent="2" name="age">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-      </column>
-      <column id="6" parent="2" name="smth">
-        <mandatory>1</mandatory>
-        <data-type>text</data-type>
-      </column>
-      <key id="7" parent="2" name="PRIMARY">
+      <key id="10" parent="3" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
