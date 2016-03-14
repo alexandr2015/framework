@@ -21,17 +21,19 @@ class Migration
     public function actionUp()
     {
         $migrationDirectory = Config::get('root') . '/database/migrations';
-        $files = scandir($migrationDirectory);
+        $allFiles = scandir($migrationDirectory);
+        $files = array_diff($allFiles, array('.', '..'));
         foreach ($files as $file) {
+            $className = substr($file, 0, strlen($file) - 4);
+
             if (!in_array(
-                    $file,
+                    $className,
                     array_merge(
                         $this->run,
                         ['.', '..']
                     )
                 )
             ) {
-                $className = substr($file, 0, strlen($file) - 4);
                 $class = self::MIGRATION_NAMESPACE . $className;
                 $migrationObject = new $class;
                 call_user_func_array([
@@ -48,38 +50,39 @@ class Migration
                 $this->insertCurrentMigrationToDb($className);
             }
         }
+
         return 'migration done';
     }
 
-    public function actionDown()
-    {
-        $this->runMigrationMethod('down');
-    }
+//    public function actionDown()
+//    {
+//        $this->runMigrationMethod('down');
+//    }
 
-    protected function runMigrationMethod($method)
-    {
-        $migrationDirectory = Config::get('root') . '/database/migrations';
-        $files = scandir($migrationDirectory);
-        foreach ($files as $file) {
-            if (!in_array($file, ['.', '..'])) {
-                $class = $file;
-                $class = self::MIGRATION_NAMESPACE . substr($class, 0, strlen($class) - 4);
-                $migrationObject = new $class;
-                call_user_func_array([
-                    $migrationObject,
-                    $method
-                ], []);
-                $queries = call_user_func_array([
-                    $migrationObject,
-                    'getAllQueries'
-                ], []);
-                foreach ($queries as $query) {
-                    \core\Db::runQuery($query);
-                }
-            }
-        }
-        return 'migration done';
-    }
+//    protected function runMigrationMethod($method)
+//    {
+//        $migrationDirectory = Config::get('root') . '/database/migrations';
+//        $files = scandir($migrationDirectory);
+//        foreach ($files as $file) {
+//            if (!in_array($file, ['.', '..'])) {
+//                $class = $file;
+//                $class = self::MIGRATION_NAMESPACE . substr($class, 0, strlen($class) - 4);
+//                $migrationObject = new $class;
+//                call_user_func_array([
+//                    $migrationObject,
+//                    $method
+//                ], []);
+//                $queries = call_user_func_array([
+//                    $migrationObject,
+//                    'getAllQueries'
+//                ], []);
+//                foreach ($queries as $query) {
+//                    \core\Db::runQuery($query);
+//                }
+//            }
+//        }
+//        return 'migration done';
+//    }
 
     public function actionCreate($name)
     {
@@ -119,13 +122,13 @@ class Migration
     public function getMigrationFromDb()
     {
         $sql = 'SELECT name FROM migration';
-        $this->run = Db::runQuery($sql, true);
+        $this->run = Db::runQuery($sql, true, \PDO::FETCH_NUM);
     }
 
     public function insertCurrentMigrationToDb($migration)
     {
         $currentTimeStamp = date('Y-n-d H:i:s');
-        $sql = "INSERT INTO migration (`name`, `date`) VALUES ('{$migration}', {$currentTimeStamp})";
-        Db::runQuery($sql, true);
+        $sql = "INSERT INTO migration (`name`, `date`) VALUES ('{$migration}', '{$currentTimeStamp}')";
+        Db::runQuery($sql);
     }
 }
