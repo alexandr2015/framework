@@ -8,7 +8,7 @@
 
 use core\controllers\Controller;
 use application\models\Test;
-
+include '../../core/models/DatabaseModel.php';
 class DefaultController extends Controller
 {
     public function __construct()

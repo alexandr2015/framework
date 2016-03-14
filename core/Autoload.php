@@ -35,39 +35,43 @@ class Autoload
             require_once $this->path;
         } else {
             if (!$filePath = $this->loadFromProject()) {
-                dd('file not found', $this);
+                dd('file not found', $this, $filePath);
             } else {
-                dd($filePath);
+                if (file_exists($filePath)) {
+                    require_once $filePath;
+                } else {
+                    dd('not found', $this);
+                }
             }
         }
     }
 
     protected function loadFromProject()
     {
-        $root = Config::get('root');
+        $root = Config::get('core');
         $this->class .= '.php';
-        return $this->findFile($root);
+        $file = false;
+        $this->findFile($root, $file);
+        return $file;
     }
 
-    protected function findFile($dir)
+    protected function findFile($dir, &$exists)
     {
         $filesInDir = scandir($dir);
-
         foreach ($filesInDir as $file) {
             if ($file[0] == '.') {
                 continue;
             }
             $filePath = $dir . '/' . $file;
-            var_dump($filePath);
-            if ($file === $this->class) {
-                return $filePath;
+            if ($file == $this->class) {
+                $exists = $filePath;
+                return;
             } elseif (is_dir($filePath)) {
-                return $this->findFile($filePath);
-            } else {
-                continue;
+                $this->findFile($filePath, $exists);
+                if ($exists !== false) {
+                    return;
+                }
             }
         }
-
-        return false;
     }
 }

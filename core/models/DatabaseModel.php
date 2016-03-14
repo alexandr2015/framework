@@ -7,6 +7,7 @@
  * Time: 15:10
  */
 namespace core\models;
+
 use core\Connection;
 use core\models\model_traits\QueryBuilder;
 
