@@ -17,6 +17,7 @@ class DefaultController extends Controller
 
     public function actionIndex()
     {
+        $color = new DatabaseModel();
         $model = new Test();
         $res = $model->all();
         dd($res);
