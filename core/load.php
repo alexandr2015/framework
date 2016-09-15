@@ -7,6 +7,7 @@ Config::set('root', __DIR__ . '/..');
 Config::set('app', __DIR__ . '/../application');
 Config::set('config', __DIR__ . '/../config');
 Config::set('core', __DIR__);
+Config::set('views', __DIR__ . '/../views');
 //Запуск роутинга
 
 (new Router)->execute();

@@ -13,7 +13,10 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $model = new Test();
-        $res = $model->where(['id' => 1])->all();
-        dd($res);
+        $res = $model->asArray()->all();
+
+        return $this->view('index', [
+            'data' => $res,
+        ]);
     }
 }

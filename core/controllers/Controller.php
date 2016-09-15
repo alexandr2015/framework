@@ -1,11 +1,7 @@
 <?php
+
 namespace core\controllers;
-/**
- * Created by PhpStorm.
- * User: alex
- * Date: 26.02.16
- * Time: 13:32
- */
+
 class Controller
 {
     public $model;
@@ -13,6 +9,17 @@ class Controller
 
     function __construct()
     {
+    }
+
+    public function view($file, $params = [])
+    {
+        $pos = strpos(get_called_class(), 'Controller');
+        $className = strtolower(substr(get_called_class(), 0, $pos));
+        foreach ($params as $variableName => $variableValue) {
+            ${$variableName} = $variableValue;
+        }
+
+        return include \Config::get('views')  . "/{$className}/" . $file . '.php';
     }
 
 }
