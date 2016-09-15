@@ -98,9 +98,9 @@ class Router
 
     protected function parseRequestIri()
     {
-        $url = ltrim($_SERVER['REQUEST_URI'], '/');
+        $url = $_SERVER['REQUEST_URI'];
         $url = (stristr($url, '?')) ? substr($url, 1, strpos($url, '?') - 1) : substr($url, 1, strlen($url));
-        if ($url === false) {
+        if ($url == false) {
             return [];
         }
 
