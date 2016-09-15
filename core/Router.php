@@ -98,7 +98,7 @@ class Router
 
     protected function parseRequestIri()
     {
-        $url = $_SERVER['REQUEST_URI'];
+        $url = ltrim($_SERVER['REQUEST_URI'], '/');
         $url = (stristr($url, '?')) ? substr($url, 1, strpos($url, '?') - 1) : substr($url, 1, strlen($url));
         if ($url === false) {
             return [];
@@ -165,7 +165,7 @@ class Router
         if (file_exists($this->_controllerPath)) {
             include $this->_controllerPath;
         } else {
-            dd('Controller not found', $this);
+            dd('Controller not found', $this, $this->_controllerPath);
         }
 
         $controller = $this->getControllerObject();

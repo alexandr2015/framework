@@ -17,9 +17,7 @@ class DatabaseModel extends BaseModel
 
     public function __construct(array $data = [])
     {
-        if (isset($data)) {
-            var_dump($data);
-        }
+
     }
 
     /**
@@ -56,6 +54,7 @@ class DatabaseModel extends BaseModel
         }
         $this->buildSql();
         $this->setRawSql();
+
         $result = $this->_connection->prepare($this->rawSql);
         $result->execute();
         $response = $result->fetchAll(\PDO::FETCH_ASSOC);
